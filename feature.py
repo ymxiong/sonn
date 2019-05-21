@@ -5,12 +5,14 @@ import numpy as np
 class Link:
 
     def __init__(self, source, to):
-        self.w = random.random()
-        self.b = random.random()
+        self.w = random.random() * 0.5
+        self.b = random.random() * 0.5
         self.source = source
         self.to = to
 
     def propagate_feature_value(self, value):
+        self.w += value * self.w
+        self.b += value * self.b
         self.source.propagate_feature_value(value)
 
     def forward_feature_value(self, value):
@@ -24,38 +26,46 @@ class Cell:
     def __init__(self, name, observer, is_target):
         self.name = name
         self.value = 0
-        self.target_value = 0
         self.real = None
         self.observer = observer
         self.inputFrom = []
         self.outputTo = []
         self.is_target = is_target
+        self.memory = []
 
     def forward(self):
         print(self.name, "active", self.value)
         # 传播到下一层
+        self.memory.append(np.tanh(self.value))
         for o in self.outputTo:
             o.forward_feature_value(
-                np.tanh(self.value)
+                self.memory[-1]
             )
         return self
 
     def propagate(self):
-        self.value = 0
-        print(self.name, "propagate", self.value)
+        value = self.memory.pop()
+        if self.is_target:
+            print("ADJUST TARGET: " + self.name, self.real, self.value, self.real - self.value)
+        else:
+            print("ADJUST NORMAL: " + self.name, self.real, self.value, self.real - self.value)
         for i in self.inputFrom:
-            i.propagate_feature_value(self.value)
+            i.propagate_feature_value(
+                0.5 * (1-np.power(self.real - value, 2))
+            )
 
     def forward_feature_value(self, value):
         self.value += value
         if self.is_target:
-            self.target_value += value
+            print("IMPORTANT: " + self.name + " ADD " + str(value))
+            print("REAL: " + str(self.real))
         else:
             self.observer.push_active(self)
             self.observer.push_feature(self)
         return self
 
     def propagate_feature_value(self, value):
+        self.real = value
         self.observer.push_active(self)
         return self
 

@@ -10,8 +10,8 @@ feature = CellGroup('Feature', 2 * num, observer, False)
 target = CellGroup('Target', num, observer, True)
 
 # 训练迭代
-for epoch in range(0, 1):
-
+for epoch in range(0, 2):
+    print("------------BEGIN EPOCH: " + str(epoch) + "------------")
     # 随机生产特征
     a = 1
     b = 1
@@ -52,14 +52,19 @@ for epoch in range(0, 1):
         else:
             c = None
 
+        # 打印特征
+        print("a+b=c:", a, b, c)
+
         # 激活特征 交由观察者观察
         observer.activation()
 
-        # 打印特征
-        print("a+b=c:", a, b, c)
+        # TODO: 特征向量未置零，看效果决定
+        # 清理目标
+        observer.target.memory.clear()
         #
         # # 开始构建
         # observer.build()
 
-        print("---------loop_" + str(i) + "-----------")
-    print("========================\n")
+        print("---------END LOOP:" + str(i - 1) + " OF EPOCH: " + str(epoch) + "-----------")
+    print("-------------END EPOCH: " + str(epoch) + "-------------")
+    print()

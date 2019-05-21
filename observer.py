@@ -16,6 +16,11 @@ class FeatureObserver:
         for i in range(0, len(self.memory)):
             print(i)
 
+    def set_zero(self):
+        for item in self.memory:
+            item.value = 0.0
+            item.real = 0.0
+
 
 class TargetObserver:
     def __init__(self):
@@ -25,7 +30,13 @@ class TargetObserver:
         self.memory.add(target)
 
     def clean(self):
+        self.set_zero()
         self.memory.clear()
+
+    def set_zero(self):
+        for item in self.memory:
+            item.value = 0.0
+            item.real = 0.0
 
 
 class Observer:
@@ -41,21 +52,25 @@ class Observer:
         self.feature.clean()
         self.target.clean()
 
+    def set_zero(self):
+        self.feature.set_zero()
+        self.target.set_zero()
+
     def print(self):
         print("----->Print")
         print("f:", end='')
         for f in self.feature.memory:
-            print(f.name, end=' ')
+            print(f.name, f.value, end=' ')
         print()
 
         print("a:", end='')
         for f in self.active_cell_set:
-            print(f.name, end=' ')
+            print(f.name, f.value, end=' ')
         print()
 
         print("t:", end='')
         for f in self.target.memory:
-            print(f.name, end=' ')
+            print(f.name, f.value, f.real, end=' ')
         print("\n----->Print")
 
     def push_feature(self, cell):
@@ -73,31 +88,43 @@ class Observer:
         return cell
 
     def push_target(self, cell):
+        # TODO: 思考不清零保留上次传播结果会产生的现象
+        cell.value = 0.0
         self.target.push(cell)
 
     def activation(self):
         for f in self.feature.memory:
-            f.forward_feature_value(1)
+            # TODO:激活值交给外部处理
+            f.forward_feature_value(1.0)
         for t in self.target.memory:
-            t.set_target_value(1)
+            # TODO：目标值交给外部处理
+            t.set_target_value(1.0)
+        # 前馈
         self.forward()
+        # 反馈
         self.propagate()
-        self.target.memory.clear()
+        # 归零
+        self.set_zero()
 
     def forward(self):
+        print("------------BEGIN FORWARD------------")
         # 打印观察者状态
+        print("----->Print Before activation:")
         self.print()
-        print("----->Print activation:")
+        print("----->Print Activation:")
         # 遍历并激活激活队列中的元素
         while len(self.active_cell_queue) > 0:
             # 将激活细胞推进特征队列
             self.push_feature(self.pop_active().forward())
 
-        print("----->End activation:")
+        print("----->End Activation:")
+        print("----->Print End Activation:")
         self.print()
+        print("-------------END FORWARD-------------")
 
     def propagate(self):
-        print("----->Print propagate:")
+        print("------------BEGIN PROPAGATE------------")
+        print("----->Print Propagate:")
         # 查看目标队列中的细胞是否激活
         for m in self.target.memory:
             # 若没有激活则构建关系
@@ -107,8 +134,9 @@ class Observer:
             self.push_active(m)
         while len(self.active_cell_queue) > 0:
             self.pop_active().propagate()
-        print("----->End propagate:")
+        print("----->End Propagate:")
         self.print()
+        print("-------------END PROPAGATE-------------")
 
     def build(self, target):
         cell = Cell("HiddenCell_" + str(self.hidden_num), self, False)

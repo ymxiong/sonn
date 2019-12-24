@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 import matplotlib.pyplot as plt
-import dataset.circle.circle_dataset_generator as generator
+import dataset.xor.xor_dataset_generator as generator
 
 plt.title(u'scatter')
 

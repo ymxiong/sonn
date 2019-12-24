@@ -58,6 +58,7 @@ def generate_test_set():
 
 
 def generate_standard_split_line_set():
+    lines = []
     line_up = []
     line_down = []
     # 构造训练集
@@ -77,4 +78,5 @@ def generate_standard_split_line_set():
     line_down.reverse()
     line_down.extend(line_up)
     line = np.array(line_down)
-    return line
+    lines.append(line)
+    return lines

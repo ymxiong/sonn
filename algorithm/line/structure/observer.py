@@ -61,13 +61,15 @@ class Observer:
 
     def clean(self):
         self.active_cell_queue.clear()
+        for item in self.active_cell_set:
+            item.clear_active_value()
         self.active_cell_set.clear()
+        for item in self.target_cell_set:
+            item.clear_active_value()
         self.target_cell_set.clear()
 
     def link(self, target):
         hidden_cell = c.FeatureCell("F" + str(self.cell_num), self)
-        hidden_cell.next_cell_set.add(target)
-        target.pre_cell_set.add(hidden_cell)
+        hidden_cell.link(target)
         for item in self.active_cell_set:
-            item.next_cell_set.add(hidden_cell)
-            hidden_cell.pre_cell_set.add(item)
+            item.link(hidden_cell)

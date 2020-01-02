@@ -20,7 +20,10 @@ for item in training_set:
     elif item[2] == "B":
         target_cell_set[1].activation(1)
 
-    feature_cell_set[0].activation(item[0])
-    feature_cell_set[1].activation(item[1])
+    feature_cell_set[0].accumulation(item[0])
+    feature_cell_set[1].accumulation(item[1])
+
+    feature_cell_set[0].activation()
+    feature_cell_set[1].activation()
 
     observer.run()

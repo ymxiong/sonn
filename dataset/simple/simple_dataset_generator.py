@@ -19,7 +19,7 @@ def generate_train_set():
     training_set = [
         np.array([1, 1, 'A']),
         np.array([1, 1, 'A']),
-        np.array([1, 1, 'A']),
+        # np.array([1, 1, 'A']),
         # np.array([-1, 1, 'B']),
         # np.array([-1, -1, 'A']),
         # np.array([1, -1, 'B']),
